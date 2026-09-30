@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PermisosAdministrativos.Application.Authorization;
 using PermisosAdministrativos.Application.Common.Exceptions;
 using PermisosAdministrativos.Application.DTOs;
 using PermisosAdministrativos.Application.Interfaces;
@@ -63,8 +64,24 @@ public class IdentityService : IIdentityService
         string userId,
         bool isActive)
     {
+        await using var transaction = await _context.Database.BeginTransactionAsync(
+            System.Data.IsolationLevel.Serializable);
+
         var user = await _userManager.FindByIdAsync(userId)
             ?? throw new NotFoundException("El usuario no existe.");
+
+        if (!isActive && user.IsActive
+            && await _userManager.IsInRoleAsync(user, Roles.Administrator))
+        {
+            var administrators = await _userManager.GetUsersInRoleAsync(
+                Roles.Administrator);
+
+            if (administrators.Count(x => x.IsActive) <= 1)
+            {
+                throw new ValidationException(
+                    "No se puede desactivar al último administrador activo del sistema.");
+            }
+        }
 
         user.IsActive = isActive;
 
@@ -89,6 +106,8 @@ public class IdentityService : IIdentityService
 
             throw new ValidationException(errors);
         }
+
+        await transaction.CommitAsync();
     }
 
     public async Task<List<UserDto>> GetUsersAsync(
