@@ -1,0 +1,3 @@
+﻿namespace PermisosAdministrativos.Application.Features.PersonalPermits.Queries.GetApprovedPersonalPermits;
+
+public record GetApprovedPersonalPermitsQuery;

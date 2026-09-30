@@ -1,0 +1,3 @@
+﻿namespace PermisosAdministrativos.Application.Features.PersonalPermits.Commands.ApprovePersonalPermit;
+
+public record ApprovePersonalPermitCommand(int PermitId);

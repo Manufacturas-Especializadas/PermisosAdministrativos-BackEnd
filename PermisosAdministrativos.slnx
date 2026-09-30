@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="PermisosAdministrativos.Api/PermisosAdministrativos.Api.csproj" />
+    <Project Path="PermisosAdministrativos.Application/PermisosAdministrativos.Application.csproj" />
+    <Project Path="PermisosAdministrativos.Domain/PermisosAdministrativos.Domain.csproj" />
+    <Project Path="PermisosAdministrativos.Infrastructure/PermisosAdministrativos.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+</Solution>

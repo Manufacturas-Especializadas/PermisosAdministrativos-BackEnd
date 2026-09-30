@@ -1,0 +1,17 @@
+﻿using PermisosAdministrativos.Domain.Entities;
+
+namespace PermisosAdministrativos.Domain.Interfaces;
+
+public interface IDepartmentRepository
+{
+    Task<List<Department>> GetAllAsync(
+        CancellationToken cancellationToken = default);
+
+    Task<bool> ExistsByNameAsync(
+        string name,
+        CancellationToken cancellationToken = default);
+
+    Task AddAsync(
+        Department department,
+        CancellationToken cancellationToken = default);
+}

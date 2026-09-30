@@ -1,0 +1,3 @@
+﻿namespace PermisosAdministrativos.Application.Features.PersonalPermits.Queries.GetPendingPersonalPermits;
+
+public record GetPendingPersonalPermitsQuery;

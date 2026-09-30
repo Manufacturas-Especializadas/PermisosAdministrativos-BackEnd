@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>8bd8183d-41a1-41c4-92f6-f6a8a24e26c7</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.12" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+    
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PermisosAdministrativos.Application\PermisosAdministrativos.Application.csproj" />
+    <ProjectReference Include="..\PermisosAdministrativos.Infrastructure\PermisosAdministrativos.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
