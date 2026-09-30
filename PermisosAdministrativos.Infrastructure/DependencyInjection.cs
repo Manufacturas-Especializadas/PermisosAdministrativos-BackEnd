@@ -34,11 +34,17 @@ public static class DependencyInjection
         .AddEntityFrameworkStores<ApplicationDbContext>()
         .AddDefaultTokenProviders();
 
+        services.Configure<SecurityStampValidatorOptions>(options =>
+        {
+            options.ValidationInterval = TimeSpan.FromMinutes(1);
+        });
+
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IPersonalPermitRepository, PersonalPermitRepository>();
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IEmployeeSpreadsheetReader, EmployeeSpreadsheetReader>();
+        services.AddSingleton<IBusinessDateService, BusinessDateService>();
 
         return services;
     }

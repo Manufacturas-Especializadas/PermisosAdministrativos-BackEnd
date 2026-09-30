@@ -4,6 +4,10 @@ namespace PermisosAdministrativos.Domain.Interfaces;
 
 public interface IDepartmentRepository
 {
+    Task<Department?> GetByIdAsync(
+        int id,
+        CancellationToken cancellationToken = default);
+
     Task<List<Department>> GetAllAsync(
         CancellationToken cancellationToken = default);
 

@@ -7,11 +7,14 @@ namespace PermisosAdministrativos.Application.Features.Employees.Commands.Create
 public class CreateEmployeeCommandHandler
 {
     private readonly IEmployeeRepository _employeeRepository;
+    private readonly IDepartmentRepository _departmentRepository;
 
     public CreateEmployeeCommandHandler(
-        IEmployeeRepository employeeRepository)
+        IEmployeeRepository employeeRepository,
+        IDepartmentRepository departmentRepository)
     {
         _employeeRepository = employeeRepository;
+        _departmentRepository = departmentRepository;
     }
 
     public async Task<int> HandleAsync(
@@ -46,6 +49,18 @@ public class CreateEmployeeCommandHandler
             throw new ConflictException(
                 "Ya existe un empleado con ese número de nómina.");
         }
+
+        var department = await _departmentRepository.GetByIdAsync(
+            command.DepartmentId,
+            cancellationToken);
+
+        if (department is null)
+            throw new NotFoundException(
+                "El departamento no existe.");
+
+        if (!department.IsActive)
+            throw new ValidationException(
+                "El departamento está inactivo.");
 
         var employee = new Employee
         {

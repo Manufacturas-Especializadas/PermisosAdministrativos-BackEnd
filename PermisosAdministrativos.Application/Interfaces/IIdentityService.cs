@@ -9,6 +9,10 @@ public interface IIdentityService
         int? employeeId,
         string role);
 
+    Task SetUserActiveStatusAsync(
+        string userId,
+        bool isActive);
+
     Task<List<UserDto>> GetUsersAsync(
     CancellationToken cancellationToken = default);
 

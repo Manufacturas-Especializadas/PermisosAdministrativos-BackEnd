@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using PermisosAdministrativos.Application.Common.Exceptions;
 using PermisosAdministrativos.Application.DTOs;
 using PermisosAdministrativos.Application.Interfaces;
 using PermisosAdministrativos.Infrastructure.Persistence;
@@ -56,6 +57,38 @@ public class IdentityService : IIdentityService
         await _userManager.AddToRoleAsync(user, role);
 
         return user.Id;
+    }
+
+    public async Task SetUserActiveStatusAsync(
+        string userId,
+        bool isActive)
+    {
+        var user = await _userManager.FindByIdAsync(userId)
+            ?? throw new NotFoundException("El usuario no existe.");
+
+        user.IsActive = isActive;
+
+        var result = await _userManager.UpdateAsync(user);
+
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(
+                ", ",
+                result.Errors.Select(x => x.Description));
+
+            throw new ValidationException(errors);
+        }
+
+        var securityStampResult = await _userManager.UpdateSecurityStampAsync(user);
+
+        if (!securityStampResult.Succeeded)
+        {
+            var errors = string.Join(
+                ", ",
+                securityStampResult.Errors.Select(x => x.Description));
+
+            throw new ValidationException(errors);
+        }
     }
 
     public async Task<List<UserDto>> GetUsersAsync(

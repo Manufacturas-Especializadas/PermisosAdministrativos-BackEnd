@@ -1,4 +1,5 @@
-﻿using PermisosAdministrativos.Application.Interfaces;
+﻿using PermisosAdministrativos.Application.Common.Exceptions;
+using PermisosAdministrativos.Application.Interfaces;
 using PermisosAdministrativos.Domain.Enums;
 using PermisosAdministrativos.Domain.Interfaces;
 
@@ -9,15 +10,18 @@ public class CompletePersonalPermitCommandHandler
     private readonly IPersonalPermitRepository _repository;
     private readonly ICurrentUserService _currentUser;
     private readonly TimeProvider _timeProvider;
+    private readonly IBusinessDateService _businessDateService;
 
     public CompletePersonalPermitCommandHandler(
         IPersonalPermitRepository repository,
         ICurrentUserService currentUser,
-        TimeProvider timeProvider)
+        TimeProvider timeProvider,
+        IBusinessDateService businessDateService)
     {
         _repository = repository;
         _currentUser = currentUser;
         _timeProvider = timeProvider;
+        _businessDateService = businessDateService;
     }
 
     public async Task HandleAsync(
@@ -34,6 +38,12 @@ public class CompletePersonalPermitCommandHandler
         {
             throw new InvalidOperationException(
                 "El permiso no está aprobado.");
+        }
+
+        if (permit.PermitDate != _businessDateService.Today)
+        {
+            throw new ValidationException(
+                "Solo se pueden registrar salidas correspondientes al día actual.");
         }
 
         permit.Status = PermitStatus.Completed;

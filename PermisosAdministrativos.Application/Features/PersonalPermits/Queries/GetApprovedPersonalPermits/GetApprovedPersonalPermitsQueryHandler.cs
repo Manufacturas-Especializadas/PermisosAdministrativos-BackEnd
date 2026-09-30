@@ -1,22 +1,30 @@
-﻿using PermisosAdministrativos.Domain.Interfaces;
+﻿using PermisosAdministrativos.Application.Interfaces;
+using PermisosAdministrativos.Domain.Interfaces;
 
 namespace PermisosAdministrativos.Application.Features.PersonalPermits.Queries.GetApprovedPersonalPermits;
 
 public class GetApprovedPersonalPermitsQueryHandler
 {
     private readonly IPersonalPermitRepository _repository;
+    private readonly IBusinessDateService _businessDateService;
 
     public GetApprovedPersonalPermitsQueryHandler(
-        IPersonalPermitRepository repository)
+        IPersonalPermitRepository repository,
+        IBusinessDateService businessDateService)
     {
         _repository = repository;
+        _businessDateService = businessDateService;
     }
 
     public async Task<List<ApprovedPersonalPermitDto>> HandleAsync(
         GetApprovedPersonalPermitsQuery query,
         CancellationToken cancellationToken = default)
     {
-        var permits = await _repository.GetApprovedAsync(cancellationToken);
+        var today = _businessDateService.Today;
+
+        var permits = await _repository.GetApprovedAsync(
+            today,
+            cancellationToken);
 
         return permits.Select(x => new ApprovedPersonalPermitDto(
             x.Id,

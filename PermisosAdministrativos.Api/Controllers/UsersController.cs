@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PermisosAdministrativos.Api.Contracts.Users;
 using PermisosAdministrativos.Application.Authorization;
 using PermisosAdministrativos.Application.Features.Users.Commands.CreateUser;
+using PermisosAdministrativos.Application.Features.Users.Commands.SetUserStatus;
 using PermisosAdministrativos.Application.Features.Users.Queries.GetUsers;
 
 namespace PermisosAdministrativos.Api.Controllers;
@@ -14,12 +15,15 @@ public class UsersController : ControllerBase
 {
     private readonly CreateUserCommandHandler _createHandler;
     private readonly GetUsersQueryHandler _getUsersHandler;
+    private readonly SetUserStatusCommandHandler _setStatusHandler;
 
     public UsersController(CreateUserCommandHandler createHandler,
-        GetUsersQueryHandler getUsersHandler)
+        GetUsersQueryHandler getUsersHandler,
+        SetUserStatusCommandHandler setStatusHandler)
     {
         _createHandler = createHandler;
         _getUsersHandler = getUsersHandler;
+        _setStatusHandler = setStatusHandler;
     }
 
     [HttpPost]
@@ -36,6 +40,21 @@ public class UsersController : ControllerBase
             cancellationToken);
 
         return Ok(new { userId });
+    }
+
+    [HttpPatch("{id}/status")]
+    public async Task<IActionResult> SetStatus(
+        string id,
+        SetUserStatusRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _setStatusHandler.HandleAsync(
+            new SetUserStatusCommand(
+                id,
+                request.IsActive),
+            cancellationToken);
+
+        return NoContent();
     }
 
     [HttpGet]

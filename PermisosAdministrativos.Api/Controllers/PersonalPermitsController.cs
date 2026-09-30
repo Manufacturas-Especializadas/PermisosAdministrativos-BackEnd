@@ -32,7 +32,8 @@ public class PersonalPermitsController : ControllerBase
     ApprovePersonalPermitCommandHandler approveHandler,
     RejectPersonalPermitCommandHandler rejectHandler,
     GetApprovedPersonalPermitsQueryHandler getApprovedHandler,
-    CompletePersonalPermitCommandHandler completeHandler)
+    CompletePersonalPermitCommandHandler completeHandler,
+    GetPersonalPermitsQueryHandler getAllHandler)
     {
         _createHandler = createHandler;
         _getPendingHandler = getPendingHandler;
@@ -40,6 +41,7 @@ public class PersonalPermitsController : ControllerBase
         _rejectHandler = rejectHandler;
         _getApprovedHandler = getApprovedHandler;
         _completeHandler = completeHandler;
+        _getAllHandler = getAllHandler;
     }
 
     [Authorize(Roles = Roles.Supervisor + "," + Roles.Administrator)]

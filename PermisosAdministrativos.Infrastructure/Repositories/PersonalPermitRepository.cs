@@ -59,12 +59,14 @@ public class PersonalPermitRepository : IPersonalPermitRepository
     }
 
     public Task<List<PersonalPermit>> GetApprovedAsync(
+    DateOnly permitDate,
     CancellationToken cancellationToken = default)
     {
         return _context.PersonalPermits
             .AsNoTracking()
             .Include(x => x.Employee)
-            .Where(x => x.Status == PermitStatus.Approved)
+            .Where(x => x.Status == PermitStatus.Approved
+                && x.PermitDate == permitDate)
             .OrderBy(x => x.PermitDate)
             .ThenBy(x => x.ExitTime)
             .ToListAsync(cancellationToken);

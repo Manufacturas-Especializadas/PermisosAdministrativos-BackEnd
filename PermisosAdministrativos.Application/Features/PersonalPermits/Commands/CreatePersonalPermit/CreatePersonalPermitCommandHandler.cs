@@ -2,7 +2,7 @@
 using PermisosAdministrativos.Domain.Entities;
 using PermisosAdministrativos.Domain.Enums;
 using PermisosAdministrativos.Domain.Interfaces;
-using System.ComponentModel.DataAnnotations;
+using PermisosAdministrativos.Application.Common.Exceptions;
 
 namespace PermisosAdministrativos.Application.Features.PersonalPermits.Commands.CreatePersonalPermit;
 
@@ -33,17 +33,13 @@ public class CreatePersonalPermitCommandHandler
             command.EmployeeId,
             cancellationToken);
 
-        if (string.IsNullOrWhiteSpace(command.Reason))
-            throw new ValidationException(
-                "El motivo es obligatorio.");
+        if (employee is null)
+            throw new NotFoundException(
+                "El empleado no existe.");
 
-        if (command.Reason.Trim().Length > 500)
+        if (!employee.IsActive)
             throw new ValidationException(
-                "El motivo no puede exceder 500 caracteres.");
-
-        if (!Enum.IsDefined(command.PermitType))
-            throw new ValidationException(
-                "El tipo de permiso no es válido.");
+                "El empleado está inactivo.");
 
         if (string.IsNullOrWhiteSpace(command.Reason))
             throw new ValidationException(
@@ -67,7 +63,7 @@ public class CreatePersonalPermitCommandHandler
             PermitDate = command.PermitDate,
             ExitTime = command.ExitTime,
             PermitType = command.PermitType,
-            Reason = command.Reason,
+            Reason = command.Reason.Trim(),
 
             Status = PermitStatus.PendingHumanResourcesApproval,
 

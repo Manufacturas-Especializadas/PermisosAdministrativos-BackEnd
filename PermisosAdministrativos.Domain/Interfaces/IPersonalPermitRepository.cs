@@ -21,6 +21,7 @@ public interface IPersonalPermitRepository
         CancellationToken cancellationToken = default);
 
     Task<List<PersonalPermit>> GetApprovedAsync(
+    DateOnly permitDate,
     CancellationToken cancellationToken = default);
 
     Task<List<PersonalPermit>> GetPagedAsync(

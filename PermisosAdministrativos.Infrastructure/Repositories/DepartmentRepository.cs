@@ -14,6 +14,17 @@ public class DepartmentRepository : IDepartmentRepository
         _context = context;
     }
 
+    public Task<Department?> GetByIdAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        return _context.Departments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                x => x.Id == id,
+                cancellationToken);
+    }
+
     public Task<List<Department>> GetAllAsync(
         CancellationToken cancellationToken = default)
     {
