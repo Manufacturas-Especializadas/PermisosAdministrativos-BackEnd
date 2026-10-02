@@ -31,6 +31,7 @@ public class EmployeesController : ControllerBase
         _setStatusHandler = setStatusHandler;
     }
 
+    [Authorize(Roles = Roles.Administrator + "," + Roles.HumanResources + "," + Roles.Supervisor)]
     [HttpGet]
     public async Task<IActionResult> GetAll(
     string? search,

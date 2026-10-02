@@ -21,6 +21,7 @@ public class DepartmentsController : ControllerBase
         _createDepartmentHandler = createDepartmentHandler;
     }
 
+    [Authorize(Roles = "Administrator")]
     [HttpGet]
     public async Task<IActionResult> GetAll(
         CancellationToken cancellationToken)
