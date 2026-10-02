@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using PermisosAdministrativos.Application.DTOs.Auth;
@@ -18,6 +19,15 @@ public class AuthController : ControllerBase
     {
         _signInManager = signInManager;
         _userManager = userManager;
+    }
+
+    [AllowAnonymous]
+    [HttpGet("csrf")]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public IActionResult Csrf([FromServices] IAntiforgery antiforgery)
+    {
+        var tokens = antiforgery.GetAndStoreTokens(HttpContext);
+        return Ok(new { token = tokens.RequestToken });
     }
 
     [Authorize]

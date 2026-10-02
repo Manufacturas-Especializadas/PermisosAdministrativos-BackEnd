@@ -1,4 +1,5 @@
 using PermisosAdministrativos.Api.ExceptionHandling;
+using Microsoft.AspNetCore.Mvc;
 using PermisosAdministrativos.Api.Services;
 using PermisosAdministrativos.Application;
 using PermisosAdministrativos.Application.Interfaces;
@@ -22,7 +23,23 @@ builder.Services.AddInfrastructure(connectionString);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+});
+
+// Registers the framework antiforgery filter dependencies missing from AddControllers.
+builder.Services.AddMvcCore().AddViews();
+
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
+    options.Cookie.Name = "PermisosAdministrativos.Antiforgery";
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
