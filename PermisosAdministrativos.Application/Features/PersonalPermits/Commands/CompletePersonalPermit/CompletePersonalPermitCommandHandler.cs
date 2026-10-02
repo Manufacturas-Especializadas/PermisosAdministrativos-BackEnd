@@ -36,8 +36,8 @@ public class CompletePersonalPermitCommandHandler
 
         if (permit.Status != PermitStatus.Approved)
         {
-            throw new InvalidOperationException(
-                "El permiso no está aprobado.");
+            throw new ConflictException(
+                "El permiso ya no está disponible para registrar la salida.");
         }
 
         if (permit.PermitDate != _businessDateService.Today)
@@ -46,15 +46,14 @@ public class CompletePersonalPermitCommandHandler
                 "Solo se pueden registrar salidas correspondientes al día actual.");
         }
 
-        permit.Status = PermitStatus.Completed;
-        permit.ActualExitAt =
-            _timeProvider.GetUtcNow().UtcDateTime;
-
-        permit.ExitRegisteredByUserId =
-            _currentUser.UserId;
-
-        await _repository.UpdateAsync(
-            permit,
+        var completed = await _repository.TryCompleteAsync(
+            command.PermitId,
+            _currentUser.UserId,
+            _timeProvider.GetUtcNow().UtcDateTime,
             cancellationToken);
+
+        if (!completed)
+            throw new ConflictException(
+                "El permiso ya no está disponible para registrar la salida.");
     }
 }

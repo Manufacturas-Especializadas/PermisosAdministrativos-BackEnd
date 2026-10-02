@@ -1,4 +1,5 @@
 ﻿using PermisosAdministrativos.Application.Interfaces;
+using PermisosAdministrativos.Application.Common.Exceptions;
 using PermisosAdministrativos.Domain.Enums;
 using PermisosAdministrativos.Domain.Interfaces;
 
@@ -31,20 +32,17 @@ public class RejectPersonalPermitCommandHandler
                 "El permiso no existe.");
 
         if (permit.Status != PermitStatus.PendingHumanResourcesApproval)
-            throw new InvalidOperationException(
+            throw new ConflictException(
                 "El permiso ya fue procesado.");
 
-        permit.Status = PermitStatus.Rejected;
-        permit.RejectionReason = command.Reason.Trim();
-
-        permit.HumanResourcesReviewedAt =
-            _timeProvider.GetUtcNow().UtcDateTime;
-
-        permit.HumanResourcesReviewedByUserId =
-            _currentUser.UserId;
-
-        await _repository.UpdateAsync(
-            permit,
+        var rejected = await _repository.TryRejectAsync(
+            command.PermitId,
+            _currentUser.UserId,
+            command.Reason.Trim(),
+            _timeProvider.GetUtcNow().UtcDateTime,
             cancellationToken);
+
+        if (!rejected)
+            throw new ConflictException("El permiso ya fue procesado.");
     }
 }

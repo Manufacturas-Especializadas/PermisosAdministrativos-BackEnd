@@ -20,6 +20,25 @@ public interface IPersonalPermitRepository
         PersonalPermit permit,
         CancellationToken cancellationToken = default);
 
+    Task<bool> TryApproveAsync(
+        int id,
+        string userId,
+        DateTime reviewedAt,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> TryRejectAsync(
+        int id,
+        string userId,
+        string reason,
+        DateTime reviewedAt,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> TryCompleteAsync(
+        int id,
+        string userId,
+        DateTime actualExitAt,
+        CancellationToken cancellationToken = default);
+
     Task<List<PersonalPermit>> GetApprovedAsync(
     DateOnly permitDate,
     CancellationToken cancellationToken = default);

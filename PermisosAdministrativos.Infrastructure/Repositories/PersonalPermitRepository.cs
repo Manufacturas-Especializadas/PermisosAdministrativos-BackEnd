@@ -58,6 +58,61 @@ public class PersonalPermitRepository : IPersonalPermitRepository
         await _context.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task<bool> TryApproveAsync(
+        int id,
+        string userId,
+        DateTime reviewedAt,
+        CancellationToken cancellationToken = default)
+    {
+        var affectedRows = await _context.PersonalPermits
+            .Where(x => x.Id == id
+                && x.Status == PermitStatus.PendingHumanResourcesApproval)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(x => x.Status, PermitStatus.Approved)
+                .SetProperty(x => x.HumanResourcesReviewedAt, reviewedAt)
+                .SetProperty(x => x.HumanResourcesReviewedByUserId, userId),
+                cancellationToken);
+
+        return affectedRows == 1;
+    }
+
+    public async Task<bool> TryRejectAsync(
+        int id,
+        string userId,
+        string reason,
+        DateTime reviewedAt,
+        CancellationToken cancellationToken = default)
+    {
+        var affectedRows = await _context.PersonalPermits
+            .Where(x => x.Id == id
+                && x.Status == PermitStatus.PendingHumanResourcesApproval)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(x => x.Status, PermitStatus.Rejected)
+                .SetProperty(x => x.RejectionReason, reason)
+                .SetProperty(x => x.HumanResourcesReviewedAt, reviewedAt)
+                .SetProperty(x => x.HumanResourcesReviewedByUserId, userId),
+                cancellationToken);
+
+        return affectedRows == 1;
+    }
+
+    public async Task<bool> TryCompleteAsync(
+        int id,
+        string userId,
+        DateTime actualExitAt,
+        CancellationToken cancellationToken = default)
+    {
+        var affectedRows = await _context.PersonalPermits
+            .Where(x => x.Id == id && x.Status == PermitStatus.Approved)
+            .ExecuteUpdateAsync(setters => setters
+                .SetProperty(x => x.Status, PermitStatus.Completed)
+                .SetProperty(x => x.ActualExitAt, actualExitAt)
+                .SetProperty(x => x.ExitRegisteredByUserId, userId),
+                cancellationToken);
+
+        return affectedRows == 1;
+    }
+
     public Task<List<PersonalPermit>> GetApprovedAsync(
     DateOnly permitDate,
     CancellationToken cancellationToken = default)
