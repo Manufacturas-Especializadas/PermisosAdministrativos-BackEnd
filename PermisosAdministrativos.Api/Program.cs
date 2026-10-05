@@ -8,6 +8,18 @@ using PermisosAdministrativos.Infrastructure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var envConnectionString =
+    Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
+
+Console.WriteLine(
+    $"[CONFIG] ConnectionStrings__DefaultConnection presente: {!string.IsNullOrWhiteSpace(envConnectionString)}, longitud: {envConnectionString?.Length ?? 0}");
+
+var configConnectionString =
+    builder.Configuration.GetConnectionString("DefaultConnection");
+
+Console.WriteLine(
+    $"[CONFIG] GetConnectionString(DefaultConnection) presente: {!string.IsNullOrWhiteSpace(configConnectionString)}, longitud: {configConnectionString?.Length ?? 0}");
+
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
@@ -71,7 +83,9 @@ await IdentitySeeder.SeedAsync(
     builder.Configuration["SeedAdmin:Password"]);
 
 // Configure the HTTP request pipeline.
-var enableSwagger = builder.Configuration.GetValue<bool>("Swagger:Enabled");
+var enableSwagger =
+    app.Environment.IsDevelopment() ||
+    builder.Configuration.GetValue<bool>("Swagger:Enabled");
 
 if (enableSwagger)
 {
