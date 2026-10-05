@@ -71,7 +71,9 @@ await IdentitySeeder.SeedAsync(
     builder.Configuration["SeedAdmin:Password"]);
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+var enableSwagger = builder.Configuration.GetValue<bool>("Swagger:Enabled");
+
+if (enableSwagger)
 {
     app.UseSwagger();
     app.UseSwaggerUI();
