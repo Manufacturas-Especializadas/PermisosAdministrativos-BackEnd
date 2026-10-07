@@ -5,5 +5,7 @@
     <Project Path="PermisosAdministrativos.Domain/PermisosAdministrativos.Domain.csproj" />
     <Project Path="PermisosAdministrativos.Infrastructure/PermisosAdministrativos.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/tests/" />
+  <Folder Name="/tests/">
+    <Project Path="PermisosAdministrativos.Tests/PermisosAdministrativos.Tests.csproj" />
+  </Folder>
 </Solution>

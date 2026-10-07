@@ -30,6 +30,10 @@ public class IdentityService : IIdentityService
         int? employeeId,
         string role)
     {
+        if (string.IsNullOrWhiteSpace(userName) || userName.Trim().Length < 4)
+            throw new ValidationException(
+                "El nombre de usuario debe tener al menos 4 caracteres.");
+
         if (!await _roleManager.RoleExistsAsync(role))
             throw new InvalidOperationException("El rol no existe.");
 
