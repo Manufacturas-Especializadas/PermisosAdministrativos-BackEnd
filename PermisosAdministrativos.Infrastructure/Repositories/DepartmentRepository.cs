@@ -54,4 +54,12 @@ public class DepartmentRepository : IDepartmentRepository
 
         await _context.SaveChangesAsync(cancellationToken);
     }
+
+    public async Task AddRangeAsync(
+        IEnumerable<Department> departments,
+        CancellationToken cancellationToken = default)
+    {
+        await _context.Departments.AddRangeAsync(departments, cancellationToken);
+        await _context.SaveChangesAsync(cancellationToken);
+    }
 }

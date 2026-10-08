@@ -18,4 +18,8 @@ public interface IDepartmentRepository
     Task AddAsync(
         Department department,
         CancellationToken cancellationToken = default);
+
+    Task AddRangeAsync(
+        IEnumerable<Department> departments,
+        CancellationToken cancellationToken = default);
 }

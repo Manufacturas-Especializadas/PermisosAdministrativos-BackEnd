@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PermisosAdministrativos.Application.Features.Departments.Commands.CreateDepartment;
+using PermisosAdministrativos.Application.Features.Departments.Commands.ImportDepartments;
 using PermisosAdministrativos.Application.Features.Departments.Queries.GetDepartments;
 using PermisosAdministrativos.Application.Features.Employees.Commands.CreateEmployee;
 using PermisosAdministrativos.Application.Features.Employees.Commands.ImportEmployees;
@@ -28,6 +29,7 @@ public static class DependencyInjection
         services.AddScoped<GetEmployeesQueryHandler>();
         services.AddScoped<CreateEmployeeCommandHandler>();
         services.AddScoped<CreateDepartmentCommandHandler>();
+        services.AddScoped<ImportDepartmentsCommandHandler>();
         services.AddScoped<GetDepartmentsQueryHandler>();
         services.AddScoped<GetPendingPersonalPermitsQueryHandler>();
         services.AddScoped<ApprovePersonalPermitCommandHandler>();

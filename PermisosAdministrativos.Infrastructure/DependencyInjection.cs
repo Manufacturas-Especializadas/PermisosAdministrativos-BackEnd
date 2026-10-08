@@ -52,6 +52,7 @@ public static class DependencyInjection
         services.AddScoped<IDepartmentRepository, DepartmentRepository>();
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<IEmployeeSpreadsheetReader, EmployeeSpreadsheetReader>();
+        services.AddScoped<IDepartmentSpreadsheetReader, DepartmentSpreadsheetReader>();
         services.AddSingleton<IBusinessDateService, BusinessDateService>();
 
         return services;
