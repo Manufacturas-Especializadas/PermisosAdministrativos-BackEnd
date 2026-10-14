@@ -16,6 +16,7 @@ using PermisosAdministrativos.Application.Features.PersonalPermits.Queries.GetAp
 using PermisosAdministrativos.Application.Features.PersonalPermits.Queries.GetPendingPersonalPermits;
 using PermisosAdministrativos.Application.Features.PersonalPermits.Queries.GetPersonalPermits;
 using PermisosAdministrativos.Application.Features.Users.Commands.CreateUser;
+using PermisosAdministrativos.Application.Features.Users.Commands.ImportUsers;
 using PermisosAdministrativos.Application.Features.Users.Commands.SetUserStatus;
 using PermisosAdministrativos.Application.Features.Users.Queries.GetUsers;
 
@@ -46,6 +47,7 @@ public static class DependencyInjection
         services.AddScoped<GetUsersQueryHandler>();
         services.AddScoped<ImportEmployeesCommandHandler>();
         services.AddScoped<SetEmployeeStatusCommandHandler>();
+        services.AddScoped<ImportUsersCommandHandler>();
 
         return services;
     }
