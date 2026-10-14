@@ -8,6 +8,15 @@ public interface IEmployeeRepository
         int id,
         CancellationToken cancellationToken = default);
 
+    Task<Employee?> GetByIdWithDepartmentAsync(
+        int id,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> ExistsByPayrollNumberExcludingEmployeeAsync(
+        string payrollNumber,
+        int employeeId,
+        CancellationToken cancellationToken = default);
+
     Task<List<Employee>> GetPagedAsync(
     string? search,
     bool? isActive,

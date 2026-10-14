@@ -5,6 +5,8 @@ using PermisosAdministrativos.Application.Features.Departments.Queries.GetDepart
 using PermisosAdministrativos.Application.Features.Employees.Commands.CreateEmployee;
 using PermisosAdministrativos.Application.Features.Employees.Commands.ImportEmployees;
 using PermisosAdministrativos.Application.Features.Employees.Commands.SetEmployeeStatus;
+using PermisosAdministrativos.Application.Features.Employees.Commands.UpdateEmployee;
+using PermisosAdministrativos.Application.Features.Employees.Queries.GetEmployeeById;
 using PermisosAdministrativos.Application.Features.Employees.Queries.GetEmployees;
 using PermisosAdministrativos.Application.Features.PersonalPermits.Commands.ApprovePersonalPermit;
 using PermisosAdministrativos.Application.Features.PersonalPermits.Commands.CompletePersonalPermit;
@@ -28,6 +30,8 @@ public static class DependencyInjection
         services.AddScoped<CreatePersonalPermitCommandHandler>();
         services.AddScoped<GetEmployeesQueryHandler>();
         services.AddScoped<CreateEmployeeCommandHandler>();
+        services.AddScoped<UpdateEmployeeCommandHandler>();
+        services.AddScoped<GetEmployeeByIdQueryHandler>();
         services.AddScoped<CreateDepartmentCommandHandler>();
         services.AddScoped<ImportDepartmentsCommandHandler>();
         services.AddScoped<GetDepartmentsQueryHandler>();

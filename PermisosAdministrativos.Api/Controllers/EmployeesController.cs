@@ -5,6 +5,8 @@ using PermisosAdministrativos.Application.Authorization;
 using PermisosAdministrativos.Application.Features.Employees.Commands.CreateEmployee;
 using PermisosAdministrativos.Application.Features.Employees.Commands.ImportEmployees;
 using PermisosAdministrativos.Application.Features.Employees.Commands.SetEmployeeStatus;
+using PermisosAdministrativos.Application.Features.Employees.Commands.UpdateEmployee;
+using PermisosAdministrativos.Application.Features.Employees.Queries.GetEmployeeById;
 using PermisosAdministrativos.Application.Features.Employees.Queries.GetEmployees;
 
 namespace PermisosAdministrativos.Api.Controllers;
@@ -18,17 +20,23 @@ public class EmployeesController : ControllerBase
     private readonly CreateEmployeeCommandHandler _createEmployeeHandler;
     private readonly ImportEmployeesCommandHandler _importEmployeesHandler;
     private readonly SetEmployeeStatusCommandHandler _setStatusHandler;
+    private readonly GetEmployeeByIdQueryHandler _getEmployeeByIdHandler;
+    private readonly UpdateEmployeeCommandHandler _updateEmployeeHandler;
 
     public EmployeesController(
         GetEmployeesQueryHandler getEmployeesHandler,
         CreateEmployeeCommandHandler createEmployeeHandler,
         ImportEmployeesCommandHandler importEmployeesHandler,
-        SetEmployeeStatusCommandHandler setStatusHandler)
+        SetEmployeeStatusCommandHandler setStatusHandler,
+        GetEmployeeByIdQueryHandler getEmployeeByIdHandler,
+        UpdateEmployeeCommandHandler updateEmployeeHandler)
     {
         _getEmployeesHandler = getEmployeesHandler;
         _createEmployeeHandler = createEmployeeHandler;
         _importEmployeesHandler = importEmployeesHandler;
         _setStatusHandler = setStatusHandler;
+        _getEmployeeByIdHandler = getEmployeeByIdHandler;
+        _updateEmployeeHandler = updateEmployeeHandler;
     }
 
     [Authorize(Roles = Roles.Administrator + "," + Roles.HumanResources + "," + Roles.Supervisor)]
@@ -51,6 +59,30 @@ public class EmployeesController : ControllerBase
             cancellationToken);
 
         return Ok(result);
+    }
+
+    [Authorize(Roles = Roles.Administrator + "," + Roles.HumanResources + "," + Roles.Supervisor)]
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+    {
+        var result = await _getEmployeeByIdHandler.HandleAsync(
+            new GetEmployeeByIdQuery(id), cancellationToken);
+
+        return Ok(result);
+    }
+
+    [Authorize(Roles = Roles.Administrator)]
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Update(
+        int id,
+        UpdateEmployeeRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _updateEmployeeHandler.HandleAsync(
+            new UpdateEmployeeCommand(id, request.PayrollNumber, request.FullName, request.DepartmentId),
+            cancellationToken);
+
+        return NoContent();
     }
 
     [Authorize(Roles = "Administrator")]

@@ -2,6 +2,8 @@
 using PermisosAdministrativos.Application.Common.Exceptions;
 using PermisosAdministrativos.Application.Features.Employees.Commands.ImportEmployees;
 using PermisosAdministrativos.Application.Interfaces;
+using System.Xml;
+using DocumentFormat.OpenXml.Packaging;
 
 namespace PermisosAdministrativos.Infrastructure.Services;
 
@@ -11,9 +13,11 @@ public class EmployeeSpreadsheetReader : IEmployeeSpreadsheetReader
         Stream stream,
         CancellationToken cancellationToken = default)
     {
-        using var workbook = new XLWorkbook(stream);
+        cancellationToken.ThrowIfCancellationRequested();
+        using var workbook = OpenWorkbook(stream);
 
-        var worksheet = workbook.Worksheets.First();
+        var worksheet = workbook.Worksheets.FirstOrDefault()
+            ?? throw new ValidationException("El archivo no contiene una hoja de empleados.");
 
         var headerColumns = new Dictionary<string, int>(
             StringComparer.OrdinalIgnoreCase);
@@ -81,5 +85,30 @@ public class EmployeeSpreadsheetReader : IEmployeeSpreadsheetReader
         }
 
         return Task.FromResult(rows);
+    }
+
+    private static XLWorkbook OpenWorkbook(Stream stream)
+    {
+        using var buffer = new MemoryStream();
+        stream.CopyTo(buffer);
+        buffer.Position = 0;
+
+        try
+        {
+            using (var document = SpreadsheetDocument.Open(buffer, false))
+            {
+                if (document.WorkbookPart?.Workbook is null)
+                    throw new ValidationException("El archivo no es un Excel .xlsx válido.");
+            }
+
+            buffer.Position = 0;
+            return new XLWorkbook(buffer);
+        }
+        catch (Exception exception) when (exception is InvalidDataException
+            or FileFormatException or OpenXmlPackageException or XmlException
+            or FormatException or ArgumentException)
+        {
+            throw new ValidationException("El archivo no es un Excel .xlsx válido.");
+        }
     }
 }
