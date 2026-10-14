@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PermisosAdministrativos.Api.Contracts.Users;
 using PermisosAdministrativos.Application.Authorization;
 using PermisosAdministrativos.Application.Features.Users.Commands.CreateUser;
+using PermisosAdministrativos.Application.Features.Users.Commands.ImportUsers;
 using PermisosAdministrativos.Application.Features.Users.Commands.SetUserStatus;
 using PermisosAdministrativos.Application.Features.Users.Queries.GetUsers;
 
@@ -16,14 +17,17 @@ public class UsersController : ControllerBase
     private readonly CreateUserCommandHandler _createHandler;
     private readonly GetUsersQueryHandler _getUsersHandler;
     private readonly SetUserStatusCommandHandler _setStatusHandler;
+    private readonly ImportUsersCommandHandler _importUsersHandler;
 
     public UsersController(CreateUserCommandHandler createHandler,
         GetUsersQueryHandler getUsersHandler,
-        SetUserStatusCommandHandler setStatusHandler)
+        SetUserStatusCommandHandler setStatusHandler,
+        ImportUsersCommandHandler importUsersHandler)
     {
         _createHandler = createHandler;
         _getUsersHandler = getUsersHandler;
         _setStatusHandler = setStatusHandler;
+        _importUsersHandler = importUsersHandler;
     }
 
     [HttpPost]
@@ -66,6 +70,39 @@ public class UsersController : ControllerBase
             cancellationToken);
 
         return Ok(users);
+    }
+
+    [HttpPost("import")]
+    [Consumes("multipart/form-data")]
+    public async Task<IActionResult> Import(
+    [FromForm] ImportUsersRequest request,
+    CancellationToken cancellationToken)
+    {
+        if (request.File is null || request.File.Length == 0)
+            return BadRequest("Debes seleccionar un archivo.");
+
+        if (!Path.GetExtension(request.File.FileName)
+            .Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+        {
+            return BadRequest("Solo se permiten archivos .xlsx.");
+        }
+
+        const long maxFileSize = 5 * 1024 * 1024;
+
+        if (request.File.Length > maxFileSize)
+        {
+            return BadRequest(
+                "El archivo no puede superar los 5 MB.");
+        }
+
+        await using var stream =
+            request.File.OpenReadStream();
+
+        var result = await _importUsersHandler.HandleAsync(
+            new ImportUsersCommand(stream),
+            cancellationToken);
+
+        return Ok(result);
     }
 
 }

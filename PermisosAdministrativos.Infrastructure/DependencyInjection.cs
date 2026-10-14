@@ -55,6 +55,8 @@ public static class DependencyInjection
         services.AddScoped<IEmployeeSpreadsheetReader, EmployeeSpreadsheetReader>();
         services.AddScoped<IDepartmentSpreadsheetReader, DepartmentSpreadsheetReader>();
         services.AddSingleton<IBusinessDateService, BusinessDateService>();
+        services.AddScoped<IUserSpreadsheetReader, UserSpreadsheetReader>();
+        services.AddScoped<IUserImportService, UserImportService>();
 
         return services;
     }
