@@ -24,6 +24,26 @@ public class EmployeeRepository : IEmployeeRepository
                 cancellationToken);
     }
 
+    public Task<Employee?> GetByIdWithDepartmentAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        return _context.Employees
+            .AsNoTracking()
+            .Include(x => x.Department)
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public Task<bool> ExistsByPayrollNumberExcludingEmployeeAsync(
+        string payrollNumber,
+        int employeeId,
+        CancellationToken cancellationToken = default)
+    {
+        return _context.Employees.AnyAsync(
+            x => x.PayrollNumber == payrollNumber && x.Id != employeeId,
+            cancellationToken);
+    }
+
     public Task<List<Employee>> GetAllAsync(
     CancellationToken cancellationToken = default)
     {
@@ -93,10 +113,15 @@ public class EmployeeRepository : IEmployeeRepository
     int pageSize,
     CancellationToken cancellationToken = default)
     {
+        var offset = ((long)page - 1) * pageSize;
+        if (offset > int.MaxValue)
+            return [];
+
         return await BuildQuery(search, isActive, departmentId)
             .AsNoTracking()
             .OrderBy(x => x.FullName)
-            .Skip((page - 1) * pageSize)
+            .ThenBy(x => x.Id)
+            .Skip((int)offset)
             .Take(pageSize)
             .ToListAsync(cancellationToken);
     }

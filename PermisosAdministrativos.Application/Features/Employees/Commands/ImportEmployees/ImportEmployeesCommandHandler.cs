@@ -1,5 +1,7 @@
 ﻿using PermisosAdministrativos.Application.Interfaces;
 using PermisosAdministrativos.Domain.Entities;
+using PermisosAdministrativos.Application.Common.Exceptions;
+using PermisosAdministrativos.Application.Features.Employees.Common;
 using PermisosAdministrativos.Domain.Interfaces;
 
 namespace PermisosAdministrativos.Application.Features.Employees.Commands.ImportEmployees;
@@ -37,7 +39,6 @@ public class ImportEmployeesCommandHandler
             .GetAllAsync(cancellationToken);
 
         var departmentsByName = departments
-            .Where(x => x.IsActive)
             .ToDictionary(
                 x => x.Name,
                 StringComparer.OrdinalIgnoreCase);
@@ -64,6 +65,7 @@ public class ImportEmployeesCommandHandler
 
         foreach (var row in rows)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var payrollNumber = row.PayrollNumber.Trim();
             var fullName = row.FullName.Trim();
             var departmentName = row.DepartmentName.Trim();
@@ -78,7 +80,17 @@ public class ImportEmployeesCommandHandler
                 continue;
             }
 
-            if (!payrollNumbersInFile.Add(payrollNumber))
+            try
+            {
+                (payrollNumber, fullName) = EmployeeValidation.ValidateFields(payrollNumber, fullName);
+            }
+            catch (ValidationException exception)
+            {
+                result.Errors.Add($"Fila {row.RowNumber}: {exception.Message}");
+                continue;
+            }
+
+            if (payrollNumbersInFile.Contains(payrollNumber))
             {
                 result.Ignored++;
                 continue;
@@ -90,16 +102,24 @@ public class ImportEmployeesCommandHandler
                 continue;
             }
 
-            if (!departmentsByName.TryGetValue(
-                    departmentName,
-                    out var department))
-            {
-                result.Errors.Add(
-                    $"Fila {row.RowNumber}: el departamento '{departmentName}' no existe.");
+            departmentsByName.TryGetValue(departmentName, out var department);
 
+            try
+            {
+                department = EmployeeValidation.ValidateDepartment(department);
+            }
+            catch (NotFoundException)
+            {
+                result.Errors.Add($"Fila {row.RowNumber}: el departamento '{departmentName}' no existe.");
+                continue;
+            }
+            catch (ValidationException exception)
+            {
+                result.Errors.Add($"Fila {row.RowNumber}: {exception.Message}");
                 continue;
             }
 
+            payrollNumbersInFile.Add(payrollNumber);
             employeesToCreate.Add(new Employee
             {
                 PayrollNumber = payrollNumber,
