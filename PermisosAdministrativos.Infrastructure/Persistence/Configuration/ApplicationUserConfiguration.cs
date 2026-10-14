@@ -10,6 +10,9 @@ public class ApplicationUserConfiguration
 {
     public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
+        builder.Property(x => x.MustChangePassword)
+            .HasDefaultValue(false);
+
         builder.HasOne<Employee>()
             .WithOne()
             .HasForeignKey<ApplicationUser>(x => x.EmployeeId)

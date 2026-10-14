@@ -24,15 +24,16 @@ public static class DependencyInjection
 
         services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         {
-            options.Password.RequiredLength = 8;
-            options.Password.RequireDigit = true;
-            options.Password.RequireUppercase = true;
-            options.Password.RequireLowercase = true;
+            options.Password.RequiredLength = 4;
+            options.Password.RequireDigit = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireLowercase = false;
             options.Password.RequireNonAlphanumeric = false;
 
             options.Lockout.MaxFailedAccessAttempts = 5;
         })
         .AddEntityFrameworkStores<ApplicationDbContext>()
+        .AddPasswordValidator<MaximumLengthPasswordValidator>()
         .AddDefaultTokenProviders();
 
         services.ConfigureApplicationCookie(options =>
