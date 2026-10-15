@@ -13,6 +13,7 @@ namespace PermisosAdministrativos.Api.Controllers;
 
 [ApiController]
 [Route("api/employees")]
+[Authorize(Policy = Policies.PasswordChanged)]
 [Authorize]
 public class EmployeesController : ControllerBase
 {

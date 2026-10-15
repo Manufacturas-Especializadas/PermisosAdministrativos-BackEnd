@@ -1,10 +1,15 @@
-using PermisosAdministrativos.Api.ExceptionHandling;
 using Microsoft.AspNetCore.Mvc;
+using PermisosAdministrativos.Api.Authorization;
+using PermisosAdministrativos.Api.ExceptionHandling;
 using PermisosAdministrativos.Api.Services;
 using PermisosAdministrativos.Application;
+using PermisosAdministrativos.Application.Authorization;
 using PermisosAdministrativos.Application.Interfaces;
 using PermisosAdministrativos.Infrastructure;
 using PermisosAdministrativos.Infrastructure.Identity;
+using Microsoft.AspNetCore.Authorization;
+
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +37,19 @@ var connectionString = builder.Configuration
 builder.Services.AddApplication();
 
 builder.Services.AddInfrastructure(connectionString);
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(
+        Policies.PasswordChanged,
+        policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.AddRequirements(new PasswordChangedRequirement());
+        });
+});
+
+builder.Services.AddScoped<IAuthorizationHandler, PasswordChangedHandler>();
 
 // Add services to the container.
 
