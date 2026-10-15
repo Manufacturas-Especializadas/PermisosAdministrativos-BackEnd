@@ -15,6 +15,37 @@ public class PersonalPermitRepository : IPersonalPermitRepository
         _context = context;
     }
 
+    public async Task<List<PersonalPermit>> GetPagedByCreatorAsync(
+        string createdByUserId,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var offset = ((long)page - 1) * pageSize;
+        if (offset > int.MaxValue)
+            return [];
+
+        return await _context.PersonalPermits
+            .AsNoTracking()
+            .Include(x => x.Employee)
+            .Where(x => x.CreatedByUserId == createdByUserId)
+            .OrderByDescending(x => x.PermitDate)
+            .ThenByDescending(x => x.ExitTime)
+            .ThenByDescending(x => x.Id)
+            .Skip((int)offset)
+            .Take(pageSize)
+            .ToListAsync(cancellationToken);
+    }
+
+    public Task<int> CountByCreatorAsync(
+        string createdByUserId,
+        CancellationToken cancellationToken = default)
+    {
+        return _context.PersonalPermits
+            .Where(x => x.CreatedByUserId == createdByUserId)
+            .CountAsync(cancellationToken);
+    }
+
     public async Task AddAsync(
         PersonalPermit permit,
         CancellationToken cancellationToken = default)

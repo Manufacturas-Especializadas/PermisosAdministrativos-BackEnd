@@ -183,6 +183,9 @@ public class PersonalPermitSelfReviewTests
 
     private sealed class RecordingRepository(ApplicationDbContext context) : IPersonalPermitRepository
     {
+        public Task<List<PersonalPermit>> GetPagedByCreatorAsync(string createdByUserId, int page, int pageSize, CancellationToken cancellationToken = default) => throw new NotSupportedException();
+        public Task<int> CountByCreatorAsync(string createdByUserId, CancellationToken cancellationToken = default) => throw new NotSupportedException();
+
         public int ApproveCalls { get; private set; }
         public int RejectCalls { get; private set; }
         public int ReviewedPermitId { get; private set; }
