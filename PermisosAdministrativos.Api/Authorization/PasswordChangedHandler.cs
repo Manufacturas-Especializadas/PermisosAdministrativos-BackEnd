@@ -27,7 +27,7 @@ public sealed class PasswordChangedHandler
         if (user is null)
             return;
 
-        if (!user.MustChangePassword)
+        if (user.IsActive && !user.MustChangePassword)
         {
             context.Succeed(requirement);
         }
