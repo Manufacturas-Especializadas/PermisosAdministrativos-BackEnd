@@ -9,6 +9,7 @@ using PermisosAdministrativos.Application.Features.PersonalPermits.Commands.Reje
 using PermisosAdministrativos.Application.Features.PersonalPermits.Queries.GetApprovedPersonalPermits;
 using PermisosAdministrativos.Application.Features.PersonalPermits.Queries.GetPendingPersonalPermits;
 using PermisosAdministrativos.Application.Features.PersonalPermits.Queries.GetPersonalPermits;
+using PermisosAdministrativos.Application.Features.PersonalPermits.Queries.GetMyPersonalPermits;
 using PermisosAdministrativos.Domain.Enums;
 
 namespace PermisosAdministrativos.Api.Controllers;
@@ -25,6 +26,7 @@ public class PersonalPermitsController : ControllerBase
     private readonly GetApprovedPersonalPermitsQueryHandler _getApprovedHandler;
     private readonly CompletePersonalPermitCommandHandler _completeHandler;
     private readonly GetPersonalPermitsQueryHandler _getAllHandler;
+    private readonly GetMyPersonalPermitsQueryHandler _getMyHandler;
 
     public PersonalPermitsController(
     CreatePersonalPermitCommandHandler createHandler,
@@ -33,7 +35,8 @@ public class PersonalPermitsController : ControllerBase
     RejectPersonalPermitCommandHandler rejectHandler,
     GetApprovedPersonalPermitsQueryHandler getApprovedHandler,
     CompletePersonalPermitCommandHandler completeHandler,
-    GetPersonalPermitsQueryHandler getAllHandler)
+    GetPersonalPermitsQueryHandler getAllHandler,
+    GetMyPersonalPermitsQueryHandler getMyHandler)
     {
         _createHandler = createHandler;
         _getPendingHandler = getPendingHandler;
@@ -42,6 +45,20 @@ public class PersonalPermitsController : ControllerBase
         _getApprovedHandler = getApprovedHandler;
         _completeHandler = completeHandler;
         _getAllHandler = getAllHandler;
+        _getMyHandler = getMyHandler;
+    }
+
+    [Authorize(Roles = Roles.Supervisor + "," + Roles.Administrator)]
+    [HttpGet("my")]
+    public async Task<IActionResult> GetMy(
+        int page = 1,
+        int pageSize = 25,
+        CancellationToken cancellationToken = default)
+    {
+        var permits = await _getMyHandler.HandleAsync(
+            new GetMyPersonalPermitsQuery(page, pageSize), cancellationToken);
+
+        return Ok(permits);
     }
 
     [Authorize(Roles = Roles.Supervisor + "," + Roles.Administrator)]

@@ -15,6 +15,7 @@ using PermisosAdministrativos.Application.Features.PersonalPermits.Commands.Reje
 using PermisosAdministrativos.Application.Features.PersonalPermits.Queries.GetApprovedPersonalPermits;
 using PermisosAdministrativos.Application.Features.PersonalPermits.Queries.GetPendingPersonalPermits;
 using PermisosAdministrativos.Application.Features.PersonalPermits.Queries.GetPersonalPermits;
+using PermisosAdministrativos.Application.Features.PersonalPermits.Queries.GetMyPersonalPermits;
 using PermisosAdministrativos.Application.Features.Users.Commands.CreateUser;
 using PermisosAdministrativos.Application.Features.Users.Commands.ImportUsers;
 using PermisosAdministrativos.Application.Features.Users.Commands.SetUserStatus;
@@ -42,6 +43,7 @@ public static class DependencyInjection
         services.AddScoped<GetApprovedPersonalPermitsQueryHandler>();
         services.AddScoped<CompletePersonalPermitCommandHandler>();
         services.AddScoped<GetPersonalPermitsQueryHandler>();
+        services.AddScoped<GetMyPersonalPermitsQueryHandler>();
         services.AddScoped<CreateUserCommandHandler>();
         services.AddScoped<SetUserStatusCommandHandler>();
         services.AddScoped<GetUsersQueryHandler>();

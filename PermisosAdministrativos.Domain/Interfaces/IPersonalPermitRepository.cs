@@ -5,6 +5,16 @@ namespace PermisosAdministrativos.Domain.Interfaces;
 
 public interface IPersonalPermitRepository
 {
+    Task<List<PersonalPermit>> GetPagedByCreatorAsync(
+        string createdByUserId,
+        int page,
+        int pageSize,
+        CancellationToken cancellationToken = default);
+
+    Task<int> CountByCreatorAsync(
+        string createdByUserId,
+        CancellationToken cancellationToken = default);
+
     Task AddAsync(
         PersonalPermit permit,
         CancellationToken cancellationToken = default);
