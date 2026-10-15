@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PermisosAdministrativos.Api.Contracts.Departments;
+using PermisosAdministrativos.Application.Authorization;
 using PermisosAdministrativos.Application.Features.Departments.Commands.CreateDepartment;
 using PermisosAdministrativos.Application.Features.Departments.Commands.ImportDepartments;
 using PermisosAdministrativos.Application.Features.Departments.Queries.GetDepartments;
@@ -9,7 +10,7 @@ namespace PermisosAdministrativos.Api.Controllers;
 
 [ApiController]
 [Route("api/departments")]
-[Authorize]
+[Authorize(Policy = Policies.PasswordChanged)]
 public class DepartmentsController : ControllerBase
 {
     private readonly GetDepartmentsQueryHandler _getDepartmentsHandler;

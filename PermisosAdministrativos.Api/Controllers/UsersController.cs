@@ -11,6 +11,7 @@ namespace PermisosAdministrativos.Api.Controllers;
 
 [ApiController]
 [Route("api/users")]
+[Authorize(Policy = Policies.PasswordChanged)]
 [Authorize(Roles = Roles.Administrator)]
 public class UsersController : ControllerBase
 {

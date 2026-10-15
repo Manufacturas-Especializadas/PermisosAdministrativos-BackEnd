@@ -15,7 +15,7 @@ namespace PermisosAdministrativos.Api.Controllers;
 
 [ApiController]
 [Route("api/personal-permits")]
-[Authorize]
+[Authorize(Policy = Policies.PasswordChanged)]
 public class PersonalPermitsController : ControllerBase
 {
     private readonly CreatePersonalPermitCommandHandler _createHandler;

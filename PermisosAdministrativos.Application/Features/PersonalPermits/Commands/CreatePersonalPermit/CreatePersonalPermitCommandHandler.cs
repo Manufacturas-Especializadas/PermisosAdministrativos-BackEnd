@@ -41,6 +41,15 @@ public class CreatePersonalPermitCommandHandler
             throw new ValidationException(
                 "El empleado está inactivo.");
 
+        var currentEmployeeId =
+        await _currentUserService.GetEmployeeIdAsync(cancellationToken);
+
+        if (currentEmployeeId == command.EmployeeId)
+        {
+            throw new ValidationException(
+                "No puedes crear un permiso para ti mismo.");
+        }
+
         if (string.IsNullOrWhiteSpace(command.Reason))
             throw new ValidationException(
                 "El motivo es obligatorio.");
