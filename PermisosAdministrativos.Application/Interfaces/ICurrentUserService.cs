@@ -3,4 +3,6 @@
 public interface ICurrentUserService
 {
     string UserId { get; }
+
+    Task<int?> GetEmployeeIdAsync(CancellationToken cancellationToken = default);
 }

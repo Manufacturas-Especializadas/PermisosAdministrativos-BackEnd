@@ -35,6 +35,10 @@ public class RejectPersonalPermitCommandHandler
             throw new ConflictException(
                 "El permiso ya fue procesado.");
 
+        var currentEmployeeId = await _currentUser.GetEmployeeIdAsync(cancellationToken);
+        if (currentEmployeeId == permit.EmployeeId)
+            throw new ValidationException("No puedes aprobar o rechazar tu propia solicitud.");
+
         var rejected = await _repository.TryRejectAsync(
             command.PermitId,
             _currentUser.UserId,
