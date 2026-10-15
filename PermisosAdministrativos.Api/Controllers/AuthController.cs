@@ -42,6 +42,9 @@ public class AuthController : ControllerBase
         if (user is null)
             return Unauthorized();
 
+        if (!user.IsActive)
+            return Forbid();
+
         return Ok(new
         {
             UserId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value,
